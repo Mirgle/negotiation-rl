@@ -60,20 +60,24 @@ class RandomAgent(Agent):
     # It cannot both accept and propose in the same turn, it can either accept or propose
     def act(self, obs, last_offer):
         my_inventory = np.array(obs[self.name]["inventory"])
-        
-        # Randomly choose whether to accept the last offer
-        if last_offer is not None and self.rng.rand() < self.accept_prob:
-            hypothetical = my_inventory + np.array(last_offer["offer"])
-            if np.any(hypothetical >= 0):  # Ensure I don't accept an invalid offer
+
+        # ---- Accept logic ----
+        if last_offer is not None:
+            # last_offer is now the vector itself
+            hypothetical = my_inventory + np.array(last_offer)
+
+            if self.rng.rand() < self.accept_prob and np.all(hypothetical >= 0):
                 return {"type": "accept"}
-        
-        # Randomly propose a trade
-        offer = self.rng.randint(-1, 2, size=self.n_items)  # allowed values: {-1, 0, 1}
-        hypothetical = my_inventory + np.array(offer)
-        if np.any(hypothetical < 0):  # Ensure I don't propose an invalid offer
+
+        # ---- Propose logic ----
+        offer = self.rng.randint(-1, 2, size=self.n_items)
+        hypothetical = my_inventory + offer
+
+        if np.any(hypothetical < 0):
             return {"type": "pass"}
-        
+
         return {"type": "propose", "offer": offer}
+
 
 class GreedyAgent(Agent):
     """Baseline: proposes trades that strictly increase its own utility."""
@@ -88,31 +92,32 @@ class GreedyAgent(Agent):
         my_vals = np.array(my_state["self_value"])
         my_inventory = np.array(my_state["inventory"])
 
-        # Occasionally accept if the last offer increases my utility
-        if last_offer is not None and last_offer.get("type") == "propose":
-            hypothetical = my_inventory + np.array(last_offer["offer"])
+        # ---- Accept if last offer increases utility ----
+        if last_offer is not None:
+            hypothetical = my_inventory + np.array(last_offer)
             if np.dot(my_vals, hypothetical) > np.dot(my_vals, my_inventory):
                 return {"type": "accept"}
 
-        # Otherwise propose a new trade that helps me
+        # ---- Propose utility-improving offer ----
         best_offer = np.zeros(self.n_items, dtype=int)
         best_gain = 0
 
-        # Try a few random offers, until we find the best offer
-        for _ in range(20):  
+        for _ in range(20):
             offer = self.rng.randint(-1, 2, size=self.n_items)
             if np.all(offer == 0):
                 continue
+
             new_inventory = my_inventory + offer
-            if np.any(new_inventory < 0):  # Ensure I don't offer more than I have
+            if np.any(new_inventory < 0):
                 continue
+
             gain = np.dot(my_vals, new_inventory) - np.dot(my_vals, my_inventory)
+
             if gain > best_gain:
                 best_gain = gain
                 best_offer = offer
 
         if best_gain > 0:
             return {"type": "propose", "offer": best_offer}
-        else:
-            # No improving offer found, pass
-            return {"type": "pass"}
+
+        return {"type": "pass"}

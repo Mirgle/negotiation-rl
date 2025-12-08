@@ -38,7 +38,7 @@ class NegotiationEnv:
 
     def step(self, actor: str, action: Dict[str, Any]):
         # Store previous utilities
-        reward = {}
+        reward = {a: 0.0 for a in self.agent_states}
 
         # Process the action
         if action["type"] == "propose":
@@ -47,7 +47,11 @@ class NegotiationEnv:
         elif action["type"] == "accept" and self.last_offer is not None:
             proposer = "B" if actor == "A" else "A"
             # Apply the trade
-            self._execute_trade(proposer=proposer, accepter=actor, offer=self.last_offer)
+            #print(f"Trade executed between {proposer} and {actor} with offer {self.last_offer}")
+            penalty = self._execute_trade(proposer=proposer, accepter=actor, offer=self.last_offer)
+            # Penalize both agents if trade is invalid - disabled b/c agent cant see oppoent inventory
+            #reward[proposer] -= penalty
+            #reward[actor] -= penalty
             self.last_offer = None  # Reset last offer after acceptance
 
         # Advance round
@@ -57,7 +61,7 @@ class NegotiationEnv:
         # Compute rewards as delta in utility
         for a in self.agent_states:
             current_utility = self._utility(a)
-            reward[a] = current_utility - self.prev_utility[a]
+            reward[a] += current_utility - self.prev_utility[a]
             # Update previous utility for next step
             self.prev_utility[a] = current_utility
 
@@ -67,7 +71,8 @@ class NegotiationEnv:
             "n_items": self.n_items,
             "initial_inventory": {a: s["inventory"].copy() for a, s in self.agent_states.items()}
         }
-
+        
+        #print(f"Round: {self.round}, Actor: {actor}, Reward: {reward}")
         return self._obs(), reward, done, info
 
     
@@ -88,8 +93,10 @@ class NegotiationEnv:
         if np.all(proposer_hypothetical >= 0) and np.all(accepter_hypothetical >= 0):
             self.agent_states[proposer]["inventory"] = proposer_hypothetical
             self.agent_states[accepter]["inventory"] = accepter_hypothetical
+            return 0  # Trade executed successfully
         else:
-            print("Invalid trade attempted; inventories unchanged.")
+            #print("Invalid trade attempted; inventories unchanged.")
+            return 1  # Penalty for invalid trade
 
 
 def _normalize_values(values):
