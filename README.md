@@ -37,10 +37,14 @@ python train.py \
 ```
 
 **Evaluate a Model against Baselines:**
-`python evaluate.py --model models/ppo_negotiation_agentA.zip --opponent greedy`
+```bash
+python evaluate.py --model models/ppo_negotiation_agentA.zip --opponent greedy
+```
 
 **Run Demo Negotiation with a Model:**
-`python demo.py --model models/ppo_negotiation_agentA.zip --opponent greedy`
+```bash
+python demo.py --model models/ppo_negotiation_agentA.zip --opponent greedy
+```
 
 Optional Opponent Choices:
 - random
@@ -51,3 +55,10 @@ Snapshot is a very early 250k timestep snapshot model trained against greedy/ran
 
 ## Model Checkpoints
 Checkpoints are included in /models.
+There is a model measured at 250k timesteps, 1 million timesteps, agentA (most up-to-date, ~2 million time steps)
+They can be demoed with these commands:
+```bash
+python evaluate.py --model models/ppo_negotiation_agentA.zip --opponent greedy
+python evaluate.py --model models/model_250k.zip --opponent greedy
+python evaluate.py --model models/model_1million.zip --opponent greedy
+```
