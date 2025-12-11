@@ -55,7 +55,7 @@ Snapshot is a very early 250k timestep snapshot model trained against greedy/ran
 
 ## Model Checkpoints
 Checkpoints are included in /models.
-There is a model measured at 250k timesteps, 1 million timesteps, agentA (most up-to-date, ~2 million time steps)
+There is a model measured at 250k timesteps, 1 million timesteps, agentA (most up-to-date, ~4 million time steps)
 They can be demoed with these commands:
 ```bash
 python evaluate.py --model models/ppo_negotiation_agentA.zip --opponent greedy
