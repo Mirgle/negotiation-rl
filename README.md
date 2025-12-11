@@ -2,7 +2,7 @@
 
 This repository contains a custom negotiation environment and PPO-based training pipeline for learning emergent bargaining behavior through reinforcement learning and self-play.
 
-## 🔍 Project Overview
+## Project Overview
 Agents negotiate over discrete item bundles with private valuations.  
 Actions: **propose**, **accept**, **pass**.  
 Rewards come from changes in utility after accepted trades.
