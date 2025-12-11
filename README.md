@@ -23,7 +23,7 @@ pip install -r requirements.txt
 ```
 
 ## Example Usage
-Usable scripts are in /scripts.
+End user scripts are in the root of negotiation_rl
 All commandline parameters are optional.
 All commands should be called from negotiation_rl root.
 
