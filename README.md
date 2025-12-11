@@ -1,6 +1,6 @@
 # Negotiation-RL: Multi-Agent PPO for Automated Bargaining
-
 This repository contains a custom negotiation environment and PPO-based training pipeline for learning emergent bargaining behavior through reinforcement learning and self-play.
+This project was created by Jeremy Lane for CS 4824 at Virginia Tech.
 
 ## Project Overview
 Agents negotiate over discrete item bundles with private valuations.  
@@ -61,4 +61,5 @@ They can be demoed with these commands:
 python evaluate.py --model models/ppo_negotiation_agentA.zip --opponent greedy
 python evaluate.py --model models/model_250k.zip --opponent greedy
 python evaluate.py --model models/model_1million.zip --opponent greedy
+
 ```
